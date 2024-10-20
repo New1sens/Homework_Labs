@@ -1,0 +1,21 @@
+Задача:https://acmp.ru/index.asp?main=task&id_task=755
+Решение:
+import java.util.Scanner;
+public class Main{
+    public static void main(String[] args){
+        Scanner scanner = new Scanner(System.in);
+        int X = scanner.nextInt();
+        int Y = scanner.nextInt();
+        int Z = scanner.nextInt();
+        int g = X + Y;
+        if (g > Z){
+            System.out.println(g-Z);
+        }
+        else if (g == Z){
+            System.out.println(0);
+        }
+        else{
+            System.out.println("Impossible");
+        }
+    }
+}
