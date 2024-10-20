@@ -1,1 +1,4 @@
-
+Задача  https://acmp.ru/index.asp?main=task&id_task=773
+решение задачи питон:
+   a = list(map(int,input().split()))
+    print(a[0]*a[0]*a[1])        
