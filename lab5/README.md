@@ -5,20 +5,20 @@
  - Сортировка выбором (Selection Sort)
 # Результаты измерений 
 Для 10 000 элементов, результаты будут конвертированны в Милисекунды
-  - Пузырьковая сортировка:  79,25мс
+- Пузырьковая сортировка:  79,25мс
 
     
-   ![image](https://github.com/user-attachments/assets/fb588d33-85a5-4998-8fc0-78a515d67a68)
+ ![image](https://github.com/user-attachments/assets/fb588d33-85a5-4998-8fc0-78a515d67a68)
 
-  - Сортировка вставками:  18,69мс
-
-    
-   ![image](https://github.com/user-attachments/assets/5128283e-ac53-4582-babf-1e48d9637c3a)
-
-  - Сортировка выбором:  66,67мс
+- Сортировка вставками:  18,69мс
 
     
-   ![image](https://github.com/user-attachments/assets/052e6646-dfab-4ce5-89cd-3a237c751d31)
+ ![image](https://github.com/user-attachments/assets/5128283e-ac53-4582-babf-1e48d9637c3a)
+
+- Сортировка выбором:  66,67мс
+
+
+  ![image](https://github.com/user-attachments/assets/052e6646-dfab-4ce5-89cd-3a237c751d31)
 
 
 Для 100 000 элементов, результаты будут конвертированны в Милисекунды
