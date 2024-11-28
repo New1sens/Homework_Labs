@@ -18,7 +18,7 @@
 - Сортировка выбором:  66,67мс
 
 
-  ![image](https://github.com/user-attachments/assets/052e6646-dfab-4ce5-89cd-3a237c751d31)
+![image](https://github.com/user-attachments/assets/052e6646-dfab-4ce5-89cd-3a237c751d31)
 
 
 Для 100 000 элементов, результаты будут конвертированны в Милисекунды
@@ -36,8 +36,8 @@
 
  - Сортировка выбором:3 730,69мс
 
-   
-   ![image](https://github.com/user-attachments/assets/0accc688-682a-4b03-8674-1133bf4993e0)
+
+![image](https://github.com/user-attachments/assets/0accc688-682a-4b03-8674-1133bf4993e0)
 # Заключение
 С увеличением размера массива время выполнения всех трех алгоритмов увеличиваются. Они не эффективны для обработки большого количества данных.
    
