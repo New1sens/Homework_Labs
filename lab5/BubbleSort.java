@@ -18,6 +18,15 @@ class BubbleSortExample {
         System.out.println("Неотсортированный массив:");
         printArray(array);
 
+        // Измерение времени сортировки
+        long startTime = System.nanoTime(); // Начало отсчета времени
+        bubbleSort(array);                   // Сортировка массива
+        long endTime = System.nanoTime();    // Конец отсчета времени
+
+        // Вывод времени сортировки
+        long duration = endTime - startTime; // Время выполнения в наносекундах
+        System.out.println("Время сортировки: " + duration + " наносекунд");
+
         // Сортировка массива с помощью пузырьковой сортировки
         bubbleSort(array);
 

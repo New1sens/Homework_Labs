@@ -6,8 +6,19 @@ class SelectionSortExample {
 
     public static void main(String[] args) {
         // Генерация неотсортированного массива случайных чисел
-        int[] array = generateRandomArray(15, 100); // Массив из 10 случайных чисел до 100
+        int[] array = generateRandomArray(100, 100); // Массив из 10 случайных чисел до 100
         System.out.println("Неотсортированный массив: " + Arrays.toString(array));
+
+
+
+        long startTime = System.nanoTime(); // Начало отсчета времени
+        selectionSort(array);                   // Сортировка массива
+        long endTime = System.nanoTime();    // Конец отсчета времени
+
+        // Вывод времени сортировки
+        long duration = endTime - startTime; // Время выполнения в наносекундах
+        System.out.println("Время сортировки: " + duration + " наносекунд");
+
 
         // Сортировка массива методом выбора
         selectionSort(array);

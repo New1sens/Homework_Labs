@@ -7,7 +7,7 @@ class InsertionSortExample{
 
     public static void main(String[] args) {
         
-        int size = 15;
+        int size = 100;
 
 
         int[] array = new int[size];
@@ -18,7 +18,16 @@ class InsertionSortExample{
             array[i] = random.nextInt(100); // Случайные числа от 0 до 99
         }
 
-        System.out.println("Исходный массив: " + Arrays.toString(array));
+        System.out.println("Неотсортированный массив: " + Arrays.toString(array));
+
+        // Измерение времени сортировки
+        long startTime = System.nanoTime(); // Начало отсчета времени
+        insertionSort(array);                   // Сортировка массива
+        long endTime = System.nanoTime();    // Конец отсчета времени
+
+        // Вывод времени сортировки
+        long duration = endTime - startTime; // Время выполнения в наносекундах
+        System.out.println("Время сортировки: " + duration + " наносекунд");
 
         // Сортируем массив методом вставки
         insertionSort(array);
