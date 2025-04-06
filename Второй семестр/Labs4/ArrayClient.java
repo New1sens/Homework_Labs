@@ -5,7 +5,7 @@ import java.util.Random;
 public class ArrayClient {
     public static void main(String[] args) {
         Random random = new Random();
-        int size = 20;
+        int size = 100;
 
         CommonArray commonArray = new CommonArray(size);
 
