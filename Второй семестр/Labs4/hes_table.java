@@ -1,134 +1,164 @@
 package Labs4;
 
 class IntHashTable {
+    private static final int DEFAULT_INITIAL_CAPACITY = 16;
+    private static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
-    private static final int DEFAULT_INITIAL_CAPACITY = 16; // Начальный размер массива
-    private static final float DEFAULT_LOAD_FACTOR = 0.75f; // Коэффициент загрузки для расширения
+    private Entry[] table;
+    private int size;
+    private int threshold;
+    private final float loadFactor;
 
-    private Entry[] table; // Массив бакетов
-    private int size; // Количество элементов
-    private int threshold; // Пороговое значение для расширения таблицы
-    private final float loadFactor; // Коэффициент загрузки
+    public IntHashTable() {
+        this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR);
+    }
 
-    // Вложенный класс для хранения элементов таблицы
+    public IntHashTable(int initialCapacity) {
+        this(initialCapacity, DEFAULT_LOAD_FACTOR);
+    }
+
+    public IntHashTable(int initialCapacity, float loadFactor) {
+        validateParameters(initialCapacity, loadFactor);
+
+        this.loadFactor = loadFactor;
+        this.table = new Entry[initialCapacity];
+        this.threshold = calculateThreshold(initialCapacity, loadFactor);
+    }
+
+    private void validateParameters(int capacity, float factor) {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("Initial capacity must be positive");
+        }
+        if (factor <= 0 || Float.isNaN(factor)) {
+            throw new IllegalArgumentException("Load factor must be positive");
+        }
+    }
+
+    private int calculateThreshold(int capacity, float factor) {
+        return (int) (capacity * factor);
+    }
+
+    public void put(int key, int value) {
+        if (needsResize()) {
+            resize();
+        }
+
+        int index = calculateIndex(key);
+        Entry entry = findEntry(table[index], key);
+
+        if (entry != null) {
+            entry.value = value;
+        } else {
+            addNewEntry(key, value, index);
+        }
+    }
+
+    private boolean needsResize() {
+        return size >= threshold;
+    }
+
+    private void resize() {
+        int newCapacity = table.length * 2;
+        Entry[] newTable = new Entry[newCapacity];
+
+        threshold = calculateThreshold(newCapacity, loadFactor);
+        transferEntries(newTable);
+
+        table = newTable;
+    }
+
+    private void transferEntries(Entry[] newTable) {
+        for (Entry entry : table) {
+            while (entry != null) {
+                Entry next = entry.next;
+                int newIndex = calculateIndex(entry.key, newTable.length);
+
+                entry.next = newTable[newIndex];
+                newTable[newIndex] = entry;
+
+                entry = next;
+            }
+        }
+    }
+
+    private int calculateIndex(int key) {
+        return calculateIndex(key, table.length);
+    }
+
+    private int calculateIndex(int key, int tableLength) {
+        return hash(key) % tableLength;
+    }
+
+    private Entry findEntry(Entry entry, int key) {
+        while (entry != null) {
+            if (entry.key == key) {
+                return entry;
+            }
+            entry = entry.next;
+        }
+        return null;
+    }
+
+    private void addNewEntry(int key, int value, int index) {
+        table[index] = new Entry(key, value, table[index]);
+        size++;
+    }
+
+    public Integer get(int key) {
+        Entry entry = findEntry(table[calculateIndex(key)], key);
+        return entry != null ? entry.value : null;
+    }
+
+    public boolean containsKey(int key) {
+        return get(key) != null;
+    }
+
+    public void remove(int key) {
+        int index = calculateIndex(key);
+        Entry prev = null;
+        Entry current = table[index];
+
+        while (current != null) {
+            if (current.key == key) {
+                removeEntry(index, prev, current);
+                return;
+            }
+            prev = current;
+            current = current.next;
+        }
+    }
+
+    private void removeEntry(int index, Entry prev, Entry current) {
+        if (prev == null) {
+            table[index] = current.next;
+        } else {
+            prev.next = current.next;
+        }
+        size--;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    private int hash(int key) {
+        return key ^ (key >>> 16);
+    }
+
+    // Вложенный класс вынес в конец
     private static class Entry {
-        final int key; // Ключ элемента (неизменяемый)
-        int value; // Значение элемента
-        Entry next; // Ссылка на следующий элемент в цепочке (для разрешения коллизий)
-
+        final int key;
+        int value;
+        Entry next;
 
         Entry(int key, int value, Entry next) {
             this.key = key;
             this.value = value;
             this.next = next;
-        }
-    }
-
-    public IntHashTable() {
-        this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR); // Вызов основного конструктора
-    }
-
-    public IntHashTable(int initialCapacity) {
-        this(initialCapacity, DEFAULT_LOAD_FACTOR); // Вызов основного конструктора
-    }
-
-
-    public IntHashTable(int initialCapacity, float loadFactor) {
-        if (initialCapacity <= 0) {
-            throw new IllegalArgumentException("Illegal initial capacity: " + initialCapacity);
-        }
-        if (loadFactor <= 0 || Float.isNaN(loadFactor)) {
-            throw new IllegalArgumentException("Illegal load factor: " + loadFactor);
-        }
-
-        this.loadFactor = loadFactor; // Установка коэффициента загрузки
-        this.table = new Entry[initialCapacity]; // Создание массива бакетов
-        this.threshold = (int)(initialCapacity * loadFactor);
-    }
-
-    // Метод для добавления или обновления элемента
-    public void put(int key, int value) {
-                if (size >= threshold) {
-            resize(table.length * 2); // Увеличиваем размер таблицы в 2 раза
-        }
-
-        // Вычисление индекса бакета для данного ключа
-        int index = hash(key) % table.length;
-
-        // Поиск ключа в цепочке бакета
-        for (Entry e = table[index]; e != null; e = e.next) {
-            if (e.key == key) {
-                e.value = value;
-                return;
-            }
-        }
-        // Если ключ не найден, добавляем новый элемент в начало цепочки
-        table[index] = new Entry(key, value, table[index]);
-        size++;
-    }
-
-    // Метод для получения значения по ключу
-    public Integer get(int key) {
-        int index = hash(key) % table.length;
-
-        // Поиск ключа в цепочке бакета
-        for (Entry e = table[index]; e != null; e = e.next) {
-            if (e.key == key) {
-                return e.value; // Возвращаем значение, если ключ найден
-            }
-        }
-
-        return null;
-    }
-
-    // Метод проверки наличия ключа в таблице
-    public boolean containsKey(int key) {
-        return get(key) != null;
-    }
-    
-    public int size() {
-        return size;
-    }
-    public boolean isEmpty() {
-        return size == 0;
-    }
-    // Вспомогательный метод для вычисления хеш-кода ключа
-    private int hash(int key) {
-        return key ^ (key >>> 16);
-    }
-
-    // Метод для расширения таблицы
-    private void resize(int newCapacity) {
-        Entry[] oldTable = table; // Сохраняем ссылку на старую таблицу
-        int oldCapacity = oldTable.length; // Сохраняем старый размер
-
-        // Проверка на максимально возможный размер
-        if (oldCapacity >= Integer.MAX_VALUE) {
-            threshold = Integer.MAX_VALUE; // Устанавливаем максимальный порог
-            return;
-        }
-
-        // Создаем новую таблицу увеличенного размера
-        Entry[] newTable = new Entry[newCapacity];
-        table = newTable; // Заменяем ссылку на таблицу
-        // Пересчитываем пороговое значение
-        threshold = (int)(newCapacity * loadFactor);
-        size = 0; // Временно обнуляем размер (будет пересчитан)
-
-        // Перехеширование всех элементов
-        for (Entry head : oldTable) {
-            while (head != null) {
-                Entry next = head.next; // Сохраняем ссылку на следующий элемент
-                // Вычисляем новый индекс для текущего элемента
-                int index = hash(head.key) % newCapacity;
-
-                // Вставляем элемент в новую таблицу
-                head.next = newTable[index];
-                newTable[index] = head;
-                size++; // Увеличиваем счетчик элементов
-
-                head = next; // Переходим к следующему элементу
-            }
         }
     }
 
@@ -140,10 +170,9 @@ class IntHashTable {
             table.put(i, i * 10);
         }
 
-        // Проверяем работу таблицы
+        // Проверка работы таблицы
         System.out.println("Размер: " + table.size());
         System.out.println("Значение для ключа 5: " + table.get(5));
         System.out.println("Содержит ключ 99: " + table.containsKey(99));
-
     }
 }
