@@ -1,40 +1,46 @@
-package labs6;
-
 import java.util.*;
 
-class Graph {
-    private Map<String, List<String>> adjacencyList;
+public class Graph {
+    private final Map<String, List<String>> adjacencyList;
 
     public Graph() {
         adjacencyList = new HashMap<>();
     }
 
-    public void addVertex(String vertex) {
+    public boolean addVertex(String vertex) {
+        if (vertex == null) {
+            throw new IllegalArgumentException("Вершина не может быть null");
+        }
         if (!adjacencyList.containsKey(vertex)) {
             adjacencyList.put(vertex, new LinkedList<>());
+            return true;
         }
+        return false;
     }
-    //Добавляет ненаправленное ребро между двумя вершинами
 
     public void addEdge(String vertex1, String vertex2) {
+        Objects.requireNonNull(vertex1, "vertex1 не может быть null");
+        Objects.requireNonNull(vertex2, "vertex2 не может быть null");
+
         addVertex(vertex1);
         addVertex(vertex2);
 
-        // Добавляем рёбра в обе стороны (ненаправленный граф)
         adjacencyList.get(vertex1).add(vertex2);
         adjacencyList.get(vertex2).add(vertex1);
     }
 
-
-     // Добавляет направленное ребро от vertex1 к vertex2
     public void addDirectedEdge(String vertex1, String vertex2) {
+        Objects.requireNonNull(vertex1, "vertex1 не может быть null");
+        Objects.requireNonNull(vertex2, "vertex2 не может быть null");
+
         addVertex(vertex1);
         addVertex(vertex2);
+
         adjacencyList.get(vertex1).add(vertex2);
     }
 
     public Map<String, List<String>> getAdjacencyList() {
-        return adjacencyList;
+        return Collections.unmodifiableMap(adjacencyList);
     }
 
     public static void main(String[] args) {
@@ -44,14 +50,17 @@ class Graph {
         graph.addVertex("A");
         graph.addVertex("B");
         graph.addVertex("C");
-        graph.addVertex("D");
 
         // Добавляю рёбра
-        graph.addEdge("A", "B"); // ненаправленное ребро
-        graph.addDirectedEdge("B", "C"); //направленное ребро
-        graph.addDirectedEdge("B", "D"); //направленное ребро
+        graph.addEdge("A", "B");  // Ненаправленное ребро
+        graph.addDirectedEdge("B", "C");  // Направленное ребро (B → C)
 
-        // Вывод смежности
-        System.out.println(graph.getAdjacencyList());
+        // Попытка добавить ребро с несуществующей вершиной (автоматически создаст D)
+        graph.addEdge("C", "D");
+
+        System.out.println("Список смежности:");
+        graph.getAdjacencyList().forEach((vertex, neighbors) -> 
+            System.out.println(vertex + " -> " + neighbors)
+        );
     }
 }
